@@ -7,13 +7,14 @@ USER root
 WORKDIR /usr/local
 
 # Update Ubuntu Software repository
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 RUN apt-get update
-RUN apt-get install -y openssh-server openssh-client wget openjdk-8-jdk
+RUN apt-get install -y openssh-server openssh-client curl wget openjdk-8-jdk
 
 # Passwordless ssh
-RUN ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
-RUN ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
-RUN ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa
+RUN yes y | ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
+RUN yes y | ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
+RUN yes y | ssh-keygen -q -N "" -t rsa -f /root/.ssh/id_rsa
 RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
 # Install HADOOP 2.9.2
@@ -24,7 +25,7 @@ RUN cd /usr/local && ln -s ./hadoop-2.9.2 hadoop
 # ENV JAVA_HOME /usr/java/default
 # ENV PATH $PATH:$JAVA_HOME/bin
 
-# Set the Hadoop NameNode Address (the host's IP of the container). The default value is $HOSTNAME
+# Set the Hadoop NameNode Address (the host's IP of the hadoop master container). The default value is $HOSTNAME
 ENV HADOOP_MASTER_ADDRESS $HOSTNAME
 
 ENV HADOOP_PREFIX /usr/local/hadoop
@@ -87,7 +88,7 @@ CMD ["/etc/bootstrap.sh", "-d"]
 EXPOSE 50010 50020 50070 50075 50090 8020 9000
 # Mapred ports
 EXPOSE 10020 19888
-#Yarn ports
+# Yarn ports
 EXPOSE 8030 8031 8032 8033 8040 8042 8088
-#Other ports
+# Other ports
 EXPOSE 49707 2122

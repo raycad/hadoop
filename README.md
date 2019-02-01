@@ -8,6 +8,8 @@ https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsDesig
 
 # Build docker image
     $ sudo docker build -t $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG .
+E.g.    
+    $ sudo docker build -t seedotech/hadoop:2.9.2 .
 
 # Push the image to the docker hub
     $ sudo docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
