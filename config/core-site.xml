@@ -1,6 +1,7 @@
+<?xml version="1.0"?>
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://HADOOP_MASTER_ADDRESS:9000</value>
+        <value>hdfs://hadoop-master:9000/</value>
     </property>
 </configuration>
