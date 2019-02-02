@@ -1,6 +1,6 @@
 # Download ubuntu base image 18.10
 FROM ubuntu:18.10
-LABEL Nguyen Truong Duong "seedotech@gmail.com"
+LABEL Nguyen Truong Duong<seedotech@gmail.com>
 
 USER root
 
@@ -8,8 +8,9 @@ WORKDIR /usr/local
 
 # Update Ubuntu Software repository
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+RUN echo "resolvconf resolvconf/linkify-resolvconf boolean false" | debconf-set-selections
 RUN apt-get update
-RUN apt-get install -y openssh-server openssh-client curl wget openjdk-8-jdk
+RUN apt-get install -y openssh-server openssh-client curl wget nano openjdk-8-jdk
 
 # Passwordless ssh
 RUN yes y | ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_dsa_key
@@ -22,38 +23,45 @@ RUN cp /root/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 RUN curl -s https://www-eu.apache.org/dist/hadoop/common/hadoop-2.9.2/hadoop-2.9.2.tar.gz | tar -xz -C /usr/local/
 RUN cd /usr/local && ln -s ./hadoop-2.9.2 hadoop
 
-# ENV JAVA_HOME /usr/java/default
-# ENV PATH $PATH:$JAVA_HOME/bin
-
 # Set the Hadoop NameNode Address (the host's IP of the hadoop master container). The default value is $HOSTNAME
 ENV HADOOP_MASTER_ADDRESS $HOSTNAME
 
-ENV HADOOP_PREFIX /usr/local/hadoop
-ENV HADOOP_COMMON_HOME $HADOOP_PREFIX
-ENV HADOOP_HDFS_HOME $HADOOP_PREFIX
-ENV HADOOP_MAPRED_HOME $HADOOP_PREFIX
-ENV HADOOP_YARN_HOME $HADOOP_PREFIX
-ENV HADOOP_CONF_DIR $HADOOP_PREFIX/etc/hadoop
-ENV YARN_CONF_DIR $HADOOP_PREFIX/etc/hadoop
+# Set JAVA_HOME variable
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV PATH $PATH:$JAVA_HOME/bin
+# RUN rm /usr/bin/java && ln -s $JAVA_HOME/bin/java /usr/bin/java
+
+ENV HADOOP_HOME /usr/local/hadoop
+ENV HADOOP_COMMON_HOME $HADOOP_HOME
+ENV HADOOP_HDFS_HOME $HADOOP_HOME
+ENV HADOOP_MAPRED_HOME $HADOOP_HOME
+ENV HADOOP_YARN_HOME $HADOOP_HOME
+ENV HADOOP_CONF_DIR $HADOOP_HOME/etc/hadoop
+ENV YARN_CONF_DIR $HADOOP_HOME/etc/hadoop
 
 # RUN echo $HADOOP_MASTER_ADDRESS >> /etc/hosts
 
 # ENTRYPOINT ["/nodejs/bin/npm", "start"]
 
-RUN mkdir $HADOOP_PREFIX/input
-RUN cp $HADOOP_PREFIX/etc/hadoop/*.xml $HADOOP_PREFIX/input
+RUN sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 HADOOP_HOME=/usr/local/hadoop\n:' $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+RUN sed -i '/^export HADOOP_CONF_DIR/ s:.*:export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop/:' $HADOOP_HOME/etc/hadoop/hadoop-env.sh
+
+# RUN mkdir -p $HADOOP_HOME/hdfs/namenode $HADOOP_HOME/hdfs/datanode
+RUN mkdir -p $HADOOP_HOME/input $HADOOP_HOME/hdfs/namenode $HADOOP_HOME/hdfs/datanode
+RUN cp $HADOOP_HOME/etc/hadoop/*.xml $HADOOP_HOME/input
 
 # Copy the core-site.xml.template file from the host machine to the container
-ADD core-site.xml.template $HADOOP_PREFIX/etc/hadoop/core-site.xml.template
-# Replace the HOSTNAME of the $HADOOP_PREFIX/etc/hadoop/core-site.xml.template file to $HADOOP_MASTER_ADDRESS then copy to the $HADOOP_PREFIX/etc/hadoop/core-site.xml file
-RUN sed s/HOSTNAME/$HADOOP_MASTER_ADDRESS/ $HADOOP_PREFIX/etc/hadoop/core-site.xml.template > $HADOOP_PREFIX/etc/hadoop/core-site.xml
+ADD core-site.xml.template $HADOOP_HOME/etc/hadoop/core-site.xml.template
+# Replace the HADOOP_MASTER_ADDRESS of the $HADOOP_HOME/etc/hadoop/core-site.xml.template file to $HADOOP_MASTER_ADDRESS then copy to the $HADOOP_HOME/etc/hadoop/core-site.xml file
+RUN sed s/HADOOP_MASTER_ADDRESS/$HADOOP_MASTER_ADDRESS/ $HADOOP_HOME/etc/hadoop/core-site.xml.template > $HADOOP_HOME/etc/hadoop/core-site.xml
+
 # Copy the hdfs-site.xml file from the host machine to the container
-ADD hdfs-site.xml $HADOOP_PREFIX/etc/hadoop/hdfs-site.xml
+ADD hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 
-ADD mapred-site.xml $HADOOP_PREFIX/etc/hadoop/mapred-site.xml
-ADD yarn-site.xml $HADOOP_PREFIX/etc/hadoop/yarn-site.xml
+ADD mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
+ADD yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
 
-RUN $HADOOP_PREFIX/bin/hdfs namenode -format
+RUN $HADOOP_HOME/bin/hdfs namenode -format
 
 # Fixing the libhadoop.so like a boss
 # RUN rm -rf /usr/local/hadoop/lib/native
@@ -69,20 +77,22 @@ RUN chmod 700 /etc/bootstrap.sh
 
 ENV BOOTSTRAP /etc/bootstrap.sh
 
-# workingaround docker.io build error
-RUN ls -la $HADOOP_PREFIX/etc/hadoop/*-env.sh
-RUN chmod +x $HADOOP_PREFIX/etc/hadoop/*-env.sh
-RUN ls -la $HADOOP_PREFIX/etc/hadoop/*-env.sh
+# Workingaround docker.io build error
+# RUN ls -la $HADOOP_HOME/etc/hadoop/*-env.sh
+# RUN chmod +x $HADOOP_HOME/etc/hadoop/*-env.sh
+# RUN ls -la $HADOOP_HOME/etc/hadoop/*-env.sh
 
 # Fix the 254 error code
-RUN sed  -i "/^[^#]*UsePAM/ s/.*/#&/"  /etc/ssh/sshd_config
-RUN echo "UsePAM no" >> /etc/ssh/sshd_config
-RUN echo "Port 2122" >> /etc/ssh/sshd_config
+# RUN sed  -i "/^[^#]*UsePAM/ s/.*/#&/"  /etc/ssh/sshd_config
+# RUN echo "UsePAM no" >> /etc/ssh/sshd_config
+# RUN echo "Port 2122" >> /etc/ssh/sshd_config
 
-RUN service sshd start && $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh && $HADOOP_PREFIX/sbin/start-dfs.sh && $HADOOP_PREFIX/bin/hdfs dfs -mkdir -p /user/root
-RUN service sshd start && $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh && $HADOOP_PREFIX/sbin/start-dfs.sh && $HADOOP_PREFIX/bin/hdfs dfs -put $HADOOP_PREFIX/etc/hadoop/ input
+# RUN service ssh restart && $HADOOP_HOME/etc/hadoop/hadoop-env.sh && $HADOOP_HOME/sbin/start-dfs.sh && $HADOOP_HOME/bin/hdfs dfs -mkdir -p /user/root
+# RUN service ssh restart && $HADOOP_HOME/etc/hadoop/hadoop-env.sh && $HADOOP_HOME/sbin/start-dfs.sh && $HADOOP_HOME/bin/hdfs dfs -put $HADOOP_HOME/etc/hadoop/ input
 
-CMD ["/etc/bootstrap.sh", "-d"]
+# CMD ["/etc/bootstrap.sh", "-d"]
+
+ENTRYPOINT ["/etc/bootstrap.sh"]
 
 # Hdfs ports
 EXPOSE 50010 50020 50070 50075 50090 8020 9000

@@ -13,3 +13,6 @@ E.g.
 
 # Push the image to the docker hub
     $ sudo docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
+
+# Start a Hadoop container
+    $ docker run --name=sdt.hadoop1 -it -p 9000:9000 -p 8020:8020 -p 50010:50010 -p 50020:50020 -p 50070:50070 -p 50075:50075 -e HADOOP_MASTER_ADDRESS=192.168.1.9  
