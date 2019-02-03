@@ -18,12 +18,17 @@ $ sudo docker push seedotech/hadoop:2.9.2
 ```
 
 ### B. Pull and Start Hadoop cluster
-##### 1. Create a hadoop network
+##### 1. Pull the image
+```
+$ sudo docker pull seedotech/hadoop:2.9.2
+```
+
+##### 2. Create a hadoop network
 ```
 $ sudo docker network create --driver=bridge hadoop
 ```
 
-##### 2. Start hadoop containers
+##### 3. Start hadoop containers
 ```
 # Start as the default will create a cluster with 3 nodes included 1 master and 2 slaves
 $ ./start_containers.sh
@@ -38,14 +43,14 @@ root@hadoop-master:~#
 $ ./start_containers.sh 3
 ```
 
-##### 3. Start the hadoop cluster from the hadoop master
+##### 4. Start the hadoop cluster from the hadoop master
 Get into the hadoop master container then execute the following commands
 ```
 $ cd /root
 $ ./start_hadoop.sh
 ```
 
-##### 4. Verify all the Hadoop services/daemons
+##### 5. Verify all the Hadoop services/daemons
 ```
 $ docker exec hadoop-master sh -c "jps"
 
@@ -56,7 +61,7 @@ Output:
 555 ResourceManager
 ```
 
-##### 5. Run Wordcount in the docker container
+##### 6. Run Wordcount in the docker container
 ```
 $ ./run_wordcount.sh
 ```
@@ -74,7 +79,7 @@ Hadoop  1
 Hello   2
 ```
 
-##### 6. Browse the HDFS system
+##### 7. Browse the HDFS system
 ```
 http://localhost:50070/explorer.html#
 http://localhost:8088/cluster
@@ -96,7 +101,7 @@ Then add the following lines:
 192.168.1.5 hadoop-slave2
 ```
 
-##### References
+### C. References
 ```
 http://odewahn.github.io/docker-jumpstart/building-images-with-dockerfiles.html
 
