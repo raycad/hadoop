@@ -13,7 +13,7 @@ $ ./build_image.sh
 $ sudo docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
 ```
 
-##### 4. Create hadoop network
+##### 4. Create a hadoop network
 ```
 $ sudo docker network create --driver=bridge hadoop
 ```
@@ -33,19 +33,18 @@ root@hadoop-master:~#
 $ ./start_containers.sh 3
 ```
 
-##### 6. Start hadoop cluster in the hadoop master
+##### 6. Start the hadoop cluster from the hadoop master
 Get into the hadoop master container then execute the following commands
 ```
 $ cd /root
-$ ./start-hadoop.sh
+$ ./start_hadoop.sh
 ```
 
 ##### 7. Verify all the Hadoop services/daemons
 ```
-$ jps
+$ docker exec hadoop-master sh -c "jps"
 
 **Output:**
-root@hadoop-master:~# jps
 161 NameNode
 841 Jps
 378 SecondaryNameNode
@@ -70,9 +69,27 @@ Hadoop  1
 Hello   2
 ```
 
+##### 9. Browse the HDFS system
+http://localhost:50070/explorer.html#
+http://localhost:8088/cluster
+
+Check data note
+http://localhost:50075
+
+**NOTE**
+You might not upload files to the hadoop cluster via HDFS Web browser. It's due to the cluster will call to http://hadoop-slave1:50075 to process while your machine could not recorgnize the "hadoop-slave1" address. To fix this you have to register the Hadoop Slave address to the hosts file:
+```
+$ sudo nano /etc/hosts
+
+Then add the following lines:
+# Set host for Hadoop cluster
+192.168.1.8 hadoop-master
+192.168.1.6 hadoop-slave1
+192.168.1.5 hadoop-slave2
+```
+
 ##### References
 ```
-https://github.com/kiwenlau/hadoop-cluster-docker/blob/master/Dockerfile
 http://odewahn.github.io/docker-jumpstart/building-images-with-dockerfiles.html
 
 https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-common/ClusterSetup.html

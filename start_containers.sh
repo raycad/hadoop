@@ -12,8 +12,7 @@ echo "Start hadoop-master container in the hadoop network..."
 sudo docker run -itd \
                 --net=hadoop \
                 -p 50070:50070 \
-				-p 50075:50075 \
-                -p 8088:8088 \
+				-p 8088:8088 \
 				-e HADOOP_SLAVE_NUMBER=$HADOOP_SLAVE_NUMBER \
                 --name hadoop-master \
                 --hostname hadoop-master \
@@ -27,6 +26,7 @@ do
 	echo "Start hadoop-slave$i container..."
 	sudo docker run -itd \
 	                --net=hadoop \
+					-p 50075:50075 \
 					-e HADOOP_SLAVE_NUMBER=$HADOOP_SLAVE_NUMBER \
 	                --name hadoop-slave$i \
 	                --hostname hadoop-slave$i \

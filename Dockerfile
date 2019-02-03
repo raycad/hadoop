@@ -27,6 +27,7 @@ RUN ssh-keygen -t rsa -f /root/.ssh/id_rsa -P '' && \
 # Create the default directories
 RUN mkdir -p /root/hdfs/namenode && \ 
     mkdir -p /root/hdfs/datanode && \
+    mkdir -p /root/hdfs/hadooptmp && \
     mkdir $HADOOP_HOME/logs
 
 # Copy resources from the host to the docker container
