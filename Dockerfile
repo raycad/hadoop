@@ -21,27 +21,27 @@ ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 ENV HADOOP_SLAVE_NUMBER 2
 
 # ssh without key
-RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && \
-    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+RUN ssh-keygen -t rsa -f /root/.ssh/id_rsa -P '' && \
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
 # Create the default directories
-RUN mkdir -p ~/hdfs/namenode && \ 
-    mkdir -p ~/hdfs/datanode && \
+RUN mkdir -p /root/hdfs/namenode && \ 
+    mkdir -p /root/hdfs/datanode && \
     mkdir $HADOOP_HOME/logs
 
 # Copy resources from the host to the docker container
-ADD config/ssh_config ~/.ssh/config
+ADD config/ssh_config /root/.ssh/config
 ADD config/hadoop-env.sh $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 ADD config/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml
 ADD config/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml
 ADD config/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml
 ADD config/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml
 ADD config/slaves $HADOOP_HOME/etc/hadoop/slaves
-ADD config/start_hadoop.sh ~/start_hadoop.sh
-ADD config/run_wordcount.sh ~/run_wordcount.sh
+ADD config/start_hadoop.sh /root/start_hadoop.sh
+ADD config/run_wordcount.sh /root/run_wordcount.sh
 
-RUN chmod +x ~/start_hadoop.sh && \
-    chmod +x ~/run_wordcount.sh && \
+RUN chmod +x /root/start_hadoop.sh && \
+    chmod +x /root/run_wordcount.sh && \
     chmod +x $HADOOP_HOME/etc/hadoop/slaves && \
     chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
     chmod +x $HADOOP_HOME/sbin/start-yarn.sh 
@@ -50,11 +50,12 @@ RUN chmod +x ~/start_hadoop.sh && \
 RUN $HADOOP_HOME/bin/hdfs namenode -format
 
 # Start services
-CMD [ "/bin/sh", "-c", "service ssh start", "bash", "~/start_hadoop.sh"]
+# CMD service ssh start && /root/start_hadoop.sh
+CMD [ "sh", "-c", "service ssh start; bash"]
 
-# HDFS ports
-EXPOSE 50010 50020 50070 50075 50090 8020 9000
-# Mapred ports
-EXPOSE 10020 19888
-# Yarn ports
-EXPOSE 8030 8031 8032 8033 8040 8042 8088
+# # HDFS ports
+# EXPOSE 50010 50020 50070 50075 50090 8020 9000
+# # Mapred ports
+# EXPOSE 10020 19888
+# # Yarn ports
+# EXPOSE 8030 8031 8032 8033 8040 8042 8088

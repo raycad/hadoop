@@ -33,7 +33,26 @@ root@hadoop-master:~#
 $ ./start_containers.sh 3
 ```
 
-##### 6. Run Wordcount in the docker container
+##### 6. Start hadoop cluster in the hadoop master
+Get into the hadoop master container then execute the following commands
+```
+$ cd /root
+$ ./start-hadoop.sh
+```
+
+##### 7. Verify all the Hadoop services/daemons
+```
+$ jps
+
+**Output:**
+root@hadoop-master:~# jps
+161 NameNode
+841 Jps
+378 SecondaryNameNode
+555 ResourceManager
+```
+
+##### 8. Run Wordcount in the docker container
 ```
 $ ./run_wordcount.sh
 ```
