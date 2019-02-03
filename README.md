@@ -28,7 +28,7 @@ $ sudo docker network create --driver=bridge hadoop
 # Start as the default will create a cluster with 3 nodes included 1 master and 2 slaves
 $ ./start_containers.sh
 
-**Output:**
+Output:
 Start hadoop-master container...
 Start hadoop-slave1 container...
 Start hadoop-slave2 container...
@@ -49,7 +49,7 @@ $ ./start_hadoop.sh
 ```
 $ docker exec hadoop-master sh -c "jps"
 
-**Output:**
+Output:
 161 NameNode
 841 Jps
 378 SecondaryNameNode
