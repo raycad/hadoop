@@ -61,7 +61,7 @@ $ docker exec hadoop-master sh -c "jps"
 $ ./run_wordcount.sh
 ```
 
-**Output**
+Output
 ```
 Input file1.txt:
 Hello Docker
@@ -75,13 +75,16 @@ Hello   2
 ```
 
 ##### 6. Browse the HDFS system
+```
 http://localhost:50070/explorer.html#
 http://localhost:8088/cluster
 
 Check data note
 http://localhost:50075
+```
 
 **NOTE**
+
 You might not upload files to the hadoop cluster via HDFS Web browser. It's due to the cluster will call to http://hadoop-slave1:50075 to process while your machine could not recorgnize the "hadoop-slave1" address. To fix this you have to register the Hadoop Slave address to the hosts file:
 ```
 $ sudo nano /etc/hosts
