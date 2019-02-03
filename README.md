@@ -1,3 +1,4 @@
+### A. Create Docker Image
 ##### 1. Login to Docker Hub
 ```
 $ docker login --username=yourhubusername --password=yourpassword
@@ -11,14 +12,18 @@ $ ./build_image.sh
 ##### 3. Push the image to the docker hub
 ```
 $ sudo docker push $DOCKER_ACC/$DOCKER_REPO:$IMG_TAG
+
+e.g
+$ sudo docker push seedotech/hadoop:2.9.2
 ```
 
-##### 4. Create a hadoop network
+### B. Pull and Start Hadoop cluster
+##### 1. Create a hadoop network
 ```
 $ sudo docker network create --driver=bridge hadoop
 ```
 
-##### 5. Start hadoop containers
+##### 2. Start hadoop containers
 ```
 # Start as the default will create a cluster with 3 nodes included 1 master and 2 slaves
 $ ./start_containers.sh
@@ -33,14 +38,14 @@ root@hadoop-master:~#
 $ ./start_containers.sh 3
 ```
 
-##### 6. Start the hadoop cluster from the hadoop master
+##### 3. Start the hadoop cluster from the hadoop master
 Get into the hadoop master container then execute the following commands
 ```
 $ cd /root
 $ ./start_hadoop.sh
 ```
 
-##### 7. Verify all the Hadoop services/daemons
+##### 4. Verify all the Hadoop services/daemons
 ```
 $ docker exec hadoop-master sh -c "jps"
 
@@ -51,7 +56,7 @@ $ docker exec hadoop-master sh -c "jps"
 555 ResourceManager
 ```
 
-##### 8. Run Wordcount in the docker container
+##### 5. Run Wordcount in the docker container
 ```
 $ ./run_wordcount.sh
 ```
@@ -69,7 +74,7 @@ Hadoop  1
 Hello   2
 ```
 
-##### 9. Browse the HDFS system
+##### 6. Browse the HDFS system
 http://localhost:50070/explorer.html#
 http://localhost:8088/cluster
 
