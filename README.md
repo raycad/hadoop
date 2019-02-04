@@ -31,7 +31,7 @@ $ sudo docker network create --driver=bridge hadoop
 ##### 3. Start hadoop containers
 ```
 # Start as the default will create a cluster with 3 nodes included 1 master and 2 slaves
-$ ./start_containers.sh
+$ sudo ./start_containers.sh
 
 Output:
 Start hadoop-master container...
@@ -40,7 +40,7 @@ Start hadoop-slave2 container...
 root@hadoop-master:~#
 
 # Create a cluster has 4 nodes included 1 master and 3 slaves
-$ ./start_containers.sh 3
+$ sudo ./start_containers.sh 3
 ```
 
 ##### 4. Start the hadoop cluster from the hadoop master
@@ -84,8 +84,14 @@ Hello   2
 http://localhost:50070/explorer.html#
 http://localhost:8088/cluster
 
-Check data note
-http://localhost:50075
+Check datanode information
+(Due to the the HDFS datanode's port 50075 of the slave's containers has been mapped to 2007$i to avoid port conflict. Therefore, instead of accessing to 50075, you will use 20071, 20072,...)
+
+hadoop-slave1
+http://localhost:20071
+
+hadoop-slave2
+http://localhost:20072
 ```
 
 **NOTE**

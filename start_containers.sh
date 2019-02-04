@@ -24,9 +24,10 @@ while [ $i -lt $((HADOOP_SLAVE_NUMBER+1)) ]
 do
 	sudo docker rm -f hadoop-slave$i &> /dev/null
 	echo "Start hadoop-slave$i container..."
+	# Map the HDFS data node's port 50075 to 2007$i to avoid port conflict
 	sudo docker run -itd \
 	                --net=hadoop \
-					-p 50075:50075 \
+					-p 2007$i:50075 \
 					-e HADOOP_SLAVE_NUMBER=$HADOOP_SLAVE_NUMBER \
 	                --name hadoop-slave$i \
 	                --hostname hadoop-slave$i \
