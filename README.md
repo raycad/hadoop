@@ -30,6 +30,8 @@ $ sudo docker network create --driver=bridge hadoop
 
 ##### 3. Start hadoop containers
 ```
+# The 1st argument is set to YES if you want to create a master, the default is YES
+# The 2nd argument is the number of slaves you want to create, the default is 2
 # Start as the default will create a cluster with 3 nodes included 1 master and 2 slaves
 $ sudo ./start_containers.sh
 
@@ -40,17 +42,13 @@ Start hadoop-slave2 container...
 root@hadoop-master:~#
 
 # Create a cluster has 4 nodes included 1 master and 3 slaves
-$ sudo ./start_containers.sh 3
+$ sudo ./start_containers.sh YES 3
+
+# Create a cluster has 3 nodes included 3 slaves (no hadoop master)
+$ sudo ./start_containers.sh NO 3
 ```
 
-##### 4. Start the hadoop cluster from the hadoop master
-Get into the hadoop master container then execute the following commands
-```
-$ cd /root
-$ ./start_hadoop.sh
-```
-
-##### 5. Verify all the Hadoop services/daemons
+##### 4. Verify all the Hadoop services/daemons
 ```
 $ docker exec hadoop-master sh -c "jps"
 
@@ -61,8 +59,10 @@ Output:
 555 ResourceManager
 ```
 
-##### 6. Run Wordcount in the docker container
+##### 5. Run Wordcount in the docker container
 ```
+# Get into the container
+$ sudo docker exec -it hadoop-master bash
 $ ./run_wordcount.sh
 ```
 
@@ -79,16 +79,16 @@ Hadoop  1
 Hello   2
 ```
 
-##### 7. Browse the HDFS system
+##### 6. Browse the HDFS system
 ```
 http://localhost:50070/explorer.html#
 http://localhost:8088/cluster
 
 Check datanode information
-(Due to the the HDFS datanode's port 50075 of the slave's containers has been mapped to 2007$i to avoid port conflict. Therefore, instead of accessing to 50075, you will use 20071, 20072,...)
+(To avoid port conflict in the same host machine, the 1st hadoop slave port is mapped to 50075. From the other slaves the port is mapped to 2007$i, e.g 20072, 20073,...)
 
 hadoop-slave1
-http://localhost:20071
+http://localhost:50075
 
 hadoop-slave2
 http://localhost:20072

@@ -1,4 +1,4 @@
 #!/bin/bash
 
-echo -e "\nBuild hadoop 2.9.2 docker image...\n"
+echo -e "\nBuilding Hadoop 2.9.2 cluster docker image...\n"
 sudo docker build -t seedotech/hadoop:2.9.2 .

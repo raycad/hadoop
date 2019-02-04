@@ -50,11 +50,11 @@ RUN chmod +x /root/start_hadoop.sh && \
 # Format namenode
 RUN $HADOOP_HOME/bin/hdfs namenode -format
 
-# Start services
-# CMD service ssh start && /root/start_hadoop.sh
-CMD [ "sh", "-c", "service ssh start; bash"]
+# Start services. NOTE: the /bin/bash has to run finally to keep the container running
+CMD [ "sh", "-c", "service ssh start; /root/start_hadoop.sh; /bin/bash"]
+# CMD ["/root/start_hadoop.sh", "-d"]
 
-# # HDFS ports
+# HDFS ports
 # EXPOSE 50010 50020 50070 50075 50090 8020 9000
 # # Mapred ports
 # EXPOSE 10020 19888

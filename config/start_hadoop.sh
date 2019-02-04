@@ -18,3 +18,12 @@ done
 # Start hadoop service
 $HADOOP_HOME/sbin/start-dfs.sh
 $HADOOP_HOME/sbin/start-yarn.sh
+
+# if [[ $1 == "-d" ]]; then
+# 	while true
+# 	do 
+# 		sleep 10
+# 	done
+# elif [[ $1 == "-bash" ]]; then
+# 	/bin/bash
+# fi
